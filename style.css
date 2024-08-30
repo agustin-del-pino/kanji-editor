@@ -1,0 +1,22 @@
+#preview .md-bold {
+    font-weight: bold;
+}
+
+#preview .md-italic {
+    font-style: italic;
+}
+
+#preview .md-underline {
+    text-decoration: underline;
+}
+
+#preview .md-quote {
+    width: 100%;
+    padding: 0 5px;
+    border-left: 5px solid black;
+    display: block;
+}
+
+#preview .md-break {
+    page-break-after: always;
+}
