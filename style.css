@@ -1,3 +1,7 @@
+#preview {
+    white-space: pre-line;
+}
+
 #preview .md-bold {
     font-weight: bold;
 }
