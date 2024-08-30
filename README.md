@@ -1,7 +1,7 @@
 # kanji-editor
 Tiny editor for writing documents in japanese
 
-Visit [KJ Editor]() for use it!.
+Visit [KJ Editor](https://agustin-del-pino.github.io/kanji-editor/) for use it!.
 
 # Features
 
