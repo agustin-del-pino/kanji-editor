@@ -1,5 +1,8 @@
 #preview {
     white-space: pre-line;
+    line-height: 2;
+    overflow: auto;
+    max-height: 100%;
 }
 
 #preview .md-bold {
