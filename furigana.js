@@ -20,7 +20,7 @@ function shiftKana(text) {
         (kana) => kana === 'ー' ? kana : String.fromCharCode(kana.charCodeAt(0) - 0x60));
 }
 
-export default async function furigana(sentence) {
+export default async function furigana(sentence, fn) {
     const request_id = randomId();
     const res = await fetch(morph.url, {
         method: 'POST',
@@ -38,6 +38,7 @@ export default async function furigana(sentence) {
             ruby.textContent += word;
             const rt = document.createElement("rt");
             rt.textContent = shiftKana(read);
+            fn?.(rt);
             ruby.appendChild(rt)
             return [...rby, ruby]
         }

@@ -18,8 +18,9 @@ Visit [KJ Editor](https://agustin-del-pino.github.io/kanji-editor/) for use it!.
 | Font Family      | ✅      |
 | Export as PDF    | ✅      |
 | Furigana         | ✅      |
-| Furigana Editing | ❌      |
+| Furigana Editing | ✅      |
+| Responsive       | ✅      |
 | Add Image        | ❌      |
 | Links            | ❌      |
-| Draft            | ❌      |
+| Draft            | ✅      |
 | Dark Theme       | ❌      |
