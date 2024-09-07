@@ -1,21 +1,27 @@
 import furigana from "./furigana.js";
 import MD from "./md.js";
 
+
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
 const SESSION_KEY = "kjeditor-session";
 const PREVIEW_KEY = `${SESSION_KEY}:preview`;
 const EDITOR_KEY = `${SESSION_KEY}:editor`;
 
-const editor = document.querySelector("#editor");
-const preview = document.querySelector("#preview");
-const writer = document.querySelector("#writer");
-const render = document.querySelector("#render");
-const addFontModal = document.querySelector("#modal-font");
-const loading = document.querySelector("#modal-loading");
-const furiganaEditor = document.querySelector("#modal-furigana");
-const furiganaEntry = document.querySelector("#furigana-entry");
-const fontSelection = document.querySelector("#fonts");
-const fontUrl = document.querySelector("#font-url");
-const fontName = document.querySelector("#font-name");
+const FILENAME = "kjeditor.txt";
+
+const editor = $("#editor");
+const preview = $("#preview");
+const writer = $("#writer");
+const render = $("#render");
+const addFontModal = $("#modal-font");
+const loading = $("#modal-loading");
+const furiganaEditor = $("#modal-furigana");
+const furiganaEntry = $("#furigana-entry");
+const fontSelection = $("#fonts");
+const fontUrl = $("#font-url");
+const fontName = $("#font-name");
 
 function replaceText(fn) {
     const start = editor.selectionStart;
@@ -52,6 +58,16 @@ function addFuriganaEdition(rt) {
     rt.classList.add("cursor-pointer");
 }
 
+function download(name, txt) {
+    const blob = new Blob([txt], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
 editor.addEventListener("input", () => parseText());
 
 fontSelection.addEventListener("change", ({ target }) => {
@@ -62,11 +78,32 @@ fontSelection.addEventListener("change", ({ target }) => {
     preview.style.fontFamily = target.value;
 });
 
-document.querySelector("#furigana").addEventListener("click", async () => {
+$("#print").addEventListener("click", () => print());
+$("#save").addEventListener("click", () => download(FILENAME, editor.value));
+$("#bold").addEventListener("click", () => replaceText((text) => `**${text}**`));
+$("#italic").addEventListener("click", () => replaceText((text) => `*${text}*`));
+$("#underline").addEventListener("click", () => replaceText((text) => `_${text}_`));
+$("#bullet").addEventListener("click", () => replaceText((text) => `- ${text}`));
+$("#quote").addEventListener("click", () => replaceText((text) => `> ${text}`));
+$("#break").addEventListener("click", () => replaceText((text) => `---\n${text}`));
+$("#heading").addEventListener("click", () => replaceText((text) => text.startsWith("# ") ? `#${text}` : `# ${text}`));
+$("#furigana").addEventListener("click", async () => {
     loading.showModal();
     const task = [];
     for (const c of preview.children) {
         if (c.classList.contains("md-break")) continue;
+        
+        if (c.classList.contains("md-bullet-list")) {
+            for (const li of c.children) {
+                task.push((async (ch) => {
+                    const rubies = await furigana(ch.textContent, addFuriganaEdition);
+                    ch.innerHTML = "";
+                    rubies.forEach(r => ch.appendChild(r))
+                })(li));
+            }
+            continue
+        } 
+
         task.push((async (ch) => {
             const rubies = await furigana(ch.textContent, addFuriganaEdition);
             ch.innerHTML = "";
@@ -77,32 +114,15 @@ document.querySelector("#furigana").addEventListener("click", async () => {
     await draftPreview();
     loading.close();
 });
-document.querySelector("#print").addEventListener("click", () => print());
-document.querySelector("#bold").addEventListener("click", () => replaceText((text) => `**${text}**`));
-document.querySelector("#italic").addEventListener("click", () => replaceText((text) => `*${text}*`));
-document.querySelector("#underline").addEventListener("click", () => replaceText((text) => `_${text}_`));
-document.querySelector("#bullet").addEventListener("click", () => replaceText((text) => `- ${text}`));
-document.querySelector("#quote").addEventListener("click", () => replaceText((text) => `> ${text}`));
-document.querySelector("#break").addEventListener("click", () => replaceText((text) => `---\n${text}`));
-document.querySelector("#heading").addEventListener("click", () => replaceText((text) => text.startsWith("# ") ? `#${text}` : `# ${text}`));
-document.querySelector("#show-preview").addEventListener("click", () => {
+$("#show-preview").addEventListener("click", () => {
     writer.classList.add("hidden")
     render.classList.remove("hidden")
 });
-document.querySelector("#close-preview").addEventListener("click", () => {
+$("#close-preview").addEventListener("click", () => {
     writer.classList.remove("hidden")
     render.classList.add("hidden")
 });
-document.querySelector("#save").addEventListener("click", () => {
-    const blob = new Blob([editor.value], { type: 'text/plain' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'kjeditor.txt';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-})
-document.querySelector("#sizes").addEventListener("change", ({ target }) => {
+$("#sizes").addEventListener("change", ({ target }) => {
     for (const c of preview.classList) {
         if (c.endsWith("xl")) {
             console.log(c);
@@ -112,12 +132,12 @@ document.querySelector("#sizes").addEventListener("change", ({ target }) => {
         }
     }
 })
-document.querySelector("#discard-font").addEventListener("click", () => {
+$("#discard-font").addEventListener("click", () => {
     addFontModal.close();
     fontUrl.value = "";
     fontName.value = "";
 })
-document.querySelector("#add-font").addEventListener("click", () => {
+$("#add-font").addEventListener("click", () => {
     if (fontUrl.value === "" && fontName.value === "") return;
 
     const option = document.createElement("option");
@@ -134,12 +154,12 @@ document.querySelector("#add-font").addEventListener("click", () => {
     option.selected = true;
     preview.style.fontFamily = option.value;
 })
-document.querySelector("#save-furigana").addEventListener("click", async () => {
+$("#save-furigana").addEventListener("click", async () => {
     furiganaEditor.rt.textContent = furiganaEntry.value;
     await draftPreview();
     furiganaEditor.close();
 })
-document.querySelector("#discard-furigana").addEventListener("click", () => {
+$("#discard-furigana").addEventListener("click", () => {
     furiganaEditor.close();
 })
 

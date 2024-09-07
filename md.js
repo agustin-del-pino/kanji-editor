@@ -204,10 +204,10 @@ const MD = new (class {
     #parseBullet() {
         const ul = document.createElement("ul");
         for (; this.#tok.type === TokenType.BULLET;) {
-            const il = document.createElement("il");
-            il.textContent = this.#tok.value.substring(1);
-            il.classList.add("md-bullet");
-            ul.appendChild(il);
+            const li = document.createElement("li");
+            li.textContent = this.#tok.value.substring(1);
+            li.classList.add("md-bullet");
+            ul.appendChild(li);
             this.#next();
         }
         ul.classList.add("md-bullet-list");
